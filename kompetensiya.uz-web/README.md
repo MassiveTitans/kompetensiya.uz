@@ -1,7 +1,7 @@
-# Kompetensiya.uz — Istiqbolli Kadrlar platformasi (Django)
+# kompetensiya.uz (Django)
 
-"Istiqbolli Kadrlar" mobil ilovasining veb-versiyasi. Django + Django template'lar
-asosida qurilgan, dizayn ilova (Flutter) bilan bir xil: Plus Jakarta Sans shrifti,
+Platformaning veb-versiyasi. Django + Django template'lar
+asosida qurilgan, dizayn mobil ilova (Flutter) bilan bir xil: Plus Jakarta Sans shrifti,
 ko'k (#1565C0) asosiy rang, yumaloq kartalar, mobil qurilmada pastki navigatsiya.
 
 ## Bo'limlar (barchasi backendga bog'langan)
@@ -63,7 +63,7 @@ manzilini va `redirectUri` ni qaytaradi, ilova uni WebView'da ochib, qaytgan
 
 ## Mobil ilova uchun API (`/api/`)
 
-Flutter ilovasi (`istiqbollikadrlar-app`) barcha ma'lumotni shu endpointlardan
+Flutter ilovasi (`kompetensiya.uz-app`) barcha ma'lumotni shu endpointlardan
 oladi — ilovada qat'iy yozilgan ro'yxatlar qolmagan. Foydalanuvchiga tegishli
 endpointlar `Authorization: Token <kalit>` sarlavhasini talab qiladi (kalit ONE ID
 orqali `/api/auth/one-id/exchange/` dan olinadi).

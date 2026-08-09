@@ -1,6 +1,7 @@
-# Flutter
+# kompetensiya.uz — mobil ilova
 
-A modern Flutter-based mobile application utilizing the latest mobile development technologies and tools for building responsive cross-platform applications.
+kompetensiya.uz platformasining Flutter'da yozilgan mobil mijozi (Android va iOS).
+Barcha ma'lumot kompetensiya.uz backendidan olinadi, kirish ONE ID orqali amalga oshiriladi.
 
 ## 📋 Prerequisites
 
@@ -43,7 +44,7 @@ ko'rsatiladi.
 ## 📁 Project Structure
 
 ```
-flutter_app/
+kompetensiya.uz-app/
 ├── android/            # Android-specific configuration
 ├── ios/                # iOS-specific configuration
 ├── lib/
@@ -122,10 +123,3 @@ flutter build apk --release
 # For iOS
 flutter build ios --release
 ```
-
-## 🙏 Acknowledgments
-- Built with [Rocket.new](https://rocket.new)
-- Powered by [Flutter](https://flutter.dev) & [Dart](https://dart.dev)
-- Styled with Material Design
-
-Built with ❤️ on Rocket.new
