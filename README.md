@@ -1,0 +1,2 @@
+# kompetensiya.uz
+kompetensiya.uz
