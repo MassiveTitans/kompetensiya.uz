@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Mening kurslarim — Kompetensiya.uz{% endblock %}
+
+{% block content %}
+<a href="{% url 'accounts:profile' %}" class="small muted"><i class="bi bi-arrow-left"></i> Profil</a>
+<div class="page-head mt-1">
+  <div>
+    <h1 class="page-title">Mening kurslarim</h1>
+    <p class="page-subtitle">{{ enrollments|length }} ta kurs</p>
+  </div>
+</div>
+
+{% for e in enrollments %}
+  <div class="card mb-2">
+    <div class="flex-between">
+      <div>
+        <div class="bold">{{ e.course.title }}</div>
+        <div class="small muted mt-1">{{ e.course.category }} • {{ e.course.level }} • {{ e.course.duration_hours }} soat</div>
+      </div>
+      {% if e.certificate %}
+        <span class="badge badge-new"><i class="bi bi-award"></i> Sertifikat</span>
+      {% elif e.is_completed %}
+        <span class="badge badge-new"><i class="bi bi-check2-circle"></i> Yakunlangan</span>
+      {% endif %}
+    </div>
+    <div class="mt-2">
+      <div class="flex-between small mb-1">
+        <span class="muted">Jarayon</span>
+        <span class="bold">{{ e.progress }}%</span>
+      </div>
+      <div class="progress"><span style="width:{{ e.progress }}%"></span></div>
+    </div>
+  </div>
+{% empty %}
+  <div class="empty">
+    <div class="empty-icon"><i class="bi bi-mortarboard"></i></div>
+    <p class="bold">Hozircha kurslarga yozilmagansiz</p>
+    <a href="{% url 'courses:list' %}" class="btn btn-primary btn-sm mt-2">Kurslarni ko'rish</a>
+  </div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil — Kompetensiya.uz{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1 class="page-title">Profil</h1>
+  <a href="{% url 'accounts:profile_edit' %}" class="btn btn-ghost btn-sm"><i class="bi bi-gear"></i> Tahrirlash</a>
+</div>
+
+<!-- Profil kartasi (ilovadagi qora gradient) -->
+<div class="dark-banner mb-2">
+  <div class="flex" style="gap:16px">
+    <div class="avatar lg" style="border:2px solid rgba(255,255,255,.25)">{{ profile.initials }}</div>
+    <div>
+      <div class="bold" style="font-size:18px">{{ user.get_full_name|default:user.username }}</div>
+      <div class="small" style="color:rgba(255,255,255,.6)">{{ user.email|default:'—' }}</div>
+      <div class="mt-1">
+        {% if profile.one_id_verified %}
+          <span class="badge" style="background:rgba(255,255,255,.12);color:#64B5F6;border:1px solid rgba(255,255,255,.2)"><i class="bi bi-patch-check-fill"></i> ONE ID orqali tasdiqlangan</span>
+        {% else %}
+          <span class="badge" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)"><i class="bi bi-geo-alt"></i> {{ profile.region }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="flex mt-3" style="justify-content:space-around;text-align:center">
+    <div>
+      <div class="bold" style="font-size:22px;color:var(--primary-light)">{{ enrollments|length }}</div>
+      <div class="small" style="color:rgba(255,255,255,.55)">Kurslar</div>
+    </div>
+    <div style="width:1px;height:36px;background:rgba(255,255,255,.12)"></div>
+    <div>
+      <div class="bold" style="font-size:22px;color:var(--secondary)">{{ applications|length }}</div>
+      <div class="small" style="color:rgba(255,255,255,.55)">Arizalar</div>
+    </div>
+    <div style="width:1px;height:36px;background:rgba(255,255,255,.12)"></div>
+    <div>
+      <div class="bold" style="font-size:22px;color:#66BB6A">{{ certificates }}</div>
+      <div class="small" style="color:rgba(255,255,255,.55)">Sertifikatlar</div>
+    </div>
+    <div style="width:1px;height:36px;background:rgba(255,255,255,.12)"></div>
+    <div>
+      <div class="bold" style="font-size:22px;color:#FFD54F">{{ profile.score }}</div>
+      <div class="small" style="color:rgba(255,255,255,.55)">Reyting bali</div>
+    </div>
+  </div>
+</div>
+
+<!-- Davomat holati (bazadagi bugungi yozuvlar asosida) -->
+<div class="nav-section" style="padding-left:4px">DAVOMAT HOLATI</div>
+<div class="grid-2 mb-2">
+  <a href="{% url 'performance:attendance' %}" class="card" style="background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff">
+    <i class="bi bi-geo-alt-fill" style="font-size:20px"></i>
+    <div class="bold mt-1" style="font-size:16px">
+      {% if today_gps and not today_gps.check_out %}ISHDA{% elif today_gps %}YAKUNLANGAN{% else %}BELGILANMAGAN{% endif %}
+    </div>
+    <div class="small" style="opacity:.75">GPS davomat</div>
+    {% if today_gps %}
+      <span class="badge mt-1" style="background:rgba(255,255,255,.2);color:#fff">Bugun, {{ today_gps.check_in|time:'H:i' }}</span>
+    {% else %}
+      <span class="badge mt-1" style="background:rgba(255,255,255,.2);color:#fff">Bugun yozuv yo'q</span>
+    {% endif %}
+  </a>
+  <a href="{% url 'performance:attendance' %}" class="card" style="background:linear-gradient(135deg,#0D47A1,#1565C0);color:#fff">
+    <i class="bi bi-qr-code" style="font-size:20px"></i>
+    <div class="bold mt-1" style="font-size:16px">{{ qr_count }} ta</div>
+    <div class="small" style="opacity:.75">Tadbir davomati</div>
+    <span class="badge mt-1" style="background:rgba(255,255,255,.2);color:#fff">
+      {% if qr_count %}Qatnashgan{% else %}Hali qatnashilmagan{% endif %}
+    </span>
+  </a>
+</div>
+
+<!-- Hisob -->
+<div class="nav-section" style="padding-left:4px">HISOB</div>
+<a href="{% url 'accounts:profile_edit' %}" class="menu-item">
+  <div class="menu-icon soft-blue text-blue"><i class="bi bi-person"></i></div>
+  <div><div class="mi-label">Shaxsiy ma'lumotlar</div><div class="mi-sub">Ism, telefon, manzil</div></div>
+  <i class="bi bi-chevron-right mi-arrow"></i>
+</a>
+<a href="{% url 'courses:my_courses' %}" class="menu-item">
+  <div class="menu-icon soft-purple text-purple"><i class="bi bi-mortarboard"></i></div>
+  <div><div class="mi-label">Mening kurslarim</div><div class="mi-sub">{{ enrollments|length }} ta kurs</div></div>
+  <i class="bi bi-chevron-right mi-arrow"></i>
+</a>
+<a href="{% url 'vacancies:my_applications' %}" class="menu-item">
+  <div class="menu-icon soft-orange text-orange"><i class="bi bi-briefcase"></i></div>
+  <div><div class="mi-label">Mening arizalarim</div><div class="mi-sub">{{ applications|length }} ta ariza yuborilgan</div></div>
+  <i class="bi bi-chevron-right mi-arrow"></i>
+</a>
+<a href="{% url 'performance:attendance' %}" class="menu-item">
+  <div class="menu-icon soft-green text-green"><i class="bi bi-geo-alt"></i></div>
+  <div><div class="mi-label">Davomat</div><div class="mi-sub">GPS va QR davomat holati</div></div>
+  <i class="bi bi-chevron-right mi-arrow"></i>
+</a>
+<a href="{% url 'performance:kpi' %}" class="menu-item">
+  <div class="menu-icon soft-indigo text-indigo"><i class="bi bi-graph-up-arrow"></i></div>
+  <div><div class="mi-label">KPI ko'rsatkichlari</div><div class="mi-sub">Samaradorlik va natijalar</div></div>
+  <i class="bi bi-chevron-right mi-arrow"></i>
+</a>
+
+<!-- Test natijalari -->
+{% if results %}
+<div class="nav-section" style="padding-left:4px">TEST NATIJALARI</div>
+{% for r in results|slice:':5' %}
+  <div class="menu-item">
+    <div class="menu-icon soft-{{ r.assessment.color }} text-{{ r.assessment.color }}"><i class="bi bi-clipboard-data"></i></div>
+    <div><div class="mi-label">{{ r.assessment.title }}</div><div class="mi-sub">{{ r.completed_at|date:'j M Y' }}</div></div>
+    <span class="badge badge-new" style="margin-left:auto">{{ r.score|floatformat:0 }}%</span>
+  </div>
+{% endfor %}
+{% endif %}
+
+<div class="mt-3">
+  <a href="{% url 'accounts:logout' %}" class="menu-item" style="border:1px solid var(--error-container)">
+    <div class="menu-icon" style="background:var(--error-container);color:var(--error)"><i class="bi bi-box-arrow-right"></i></div>
+    <div><div class="mi-label" style="color:var(--error)">Tizimdan chiqish</div><div class="mi-sub">Sessiyani tugatish</div></div>
+  </a>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Vakansiyalar — Kompetensiya.uz{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Ochiq<br>Vakansiyalar</h1>
+    <p class="page-subtitle">O'zingizga mos ish o'rnini toping</p>
+  </div>
+</div>
+
+<form method="get" class="mb-2">
+  <input type="search" name="q" value="{{ q }}" class="input" placeholder="Lavozim yoki kompaniya qidirish...">
+  {% if selected != 'Barchasi' %}<input type="hidden" name="filtr" value="{{ selected }}">{% endif %}
+</form>
+
+<div class="chips">
+  {% for f in filters %}
+    <a class="chip {% if selected == f %}active{% endif %}"
+       href="?filtr={{ f|urlencode }}{% if q %}&q={{ q|urlencode }}{% endif %}">{{ f }}</a>
+  {% endfor %}
+</div>
+
+<p class="small muted mb-2">{{ vacancies|length }} ta vakansiya</p>
+
+{% if vacancies %}
+<div class="grid-2">
+  {% for v in vacancies %}
+    <div class="vacancy-card tint-{{ v.card_color }}">
+      <div class="vc-head">
+        <div class="vc-logo">
+          {% if v.logo_url %}<img src="{{ v.logo_url }}" alt="{{ v.company }}">{% else %}{{ v.company|first }}{% endif %}
+        </div>
+        <div class="flex" style="gap:6px">
+          {% if v.is_urgent %}<span class="vc-tag" style="background:rgba(255,255,255,.35)"><i class="bi bi-lightning-charge-fill"></i> Shoshilinch</span>{% endif %}
+          {% if v.is_new %}<span class="vc-tag" style="background:rgba(255,255,255,.35)">Yangi</span>{% endif %}
+        </div>
+      </div>
+      <div class="vc-position">{{ v.position }}</div>
+      <div class="vc-company">{{ v.company }} • {{ v.location }}</div>
+      <div class="vc-tags">
+        <span class="vc-tag">{{ v.field }}</span>
+        <span class="vc-tag">{{ v.work_type }}</span>
+      </div>
+      <div class="vc-foot">
+        <div class="vc-salary">{{ v.salary_display }}</div>
+        {% if v.id in applied_ids %}
+          <span class="vc-tag" style="background:rgba(255,255,255,.35)"><i class="bi bi-check2-circle"></i> Yuborilgan</span>
+        {% elif user.is_authenticated %}
+          <form method="post" action="{% url 'vacancies:apply' v.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="vc-apply">Ariza topshirish</button>
+          </form>
+        {% else %}
+          <a href="{% url 'accounts:login' %}?next={% url 'vacancies:list' %}" class="vc-apply" style="display:inline-block">Ariza topshirish</a>
+        {% endif %}
+      </div>
+      <div class="vc-meta">{{ v.days_ago }} kun oldin • {{ v.applicants }} ta ariza</div>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+  <div class="empty">
+    <div class="empty-icon"><i class="bi bi-briefcase"></i></div>
+    <p class="bold">Vakansiyalar topilmadi</p>
+    <p class="small">Qidiruv so'rovini o'zgartiring yoki boshqa filtr tanlang</p>
+  </div>
+{% endif %}
+{% endblock %}

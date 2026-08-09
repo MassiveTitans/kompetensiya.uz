@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}KPI ko'rsatkichlari — Kompetensiya.uz{% endblock %}
+
+{% block content %}
+<a href="{% url 'accounts:profile' %}" class="small muted"><i class="bi bi-arrow-left"></i> Profil</a>
+<div class="page-head mt-1">
+  <div>
+    <h1 class="page-title">KPI ko'rsatkichlari</h1>
+    <p class="page-subtitle">Samaradorlik va natijalar</p>
+  </div>
+</div>
+
+<div class="hero-banner mb-3">
+  <div>
+    <div class="bold">Umumiy samaradorlik</div>
+    <div class="small mt-1" style="opacity:.8">Barcha ko'rsatkichlar bo'yicha o'rtacha</div>
+  </div>
+  <div class="bold" style="font-size:34px">{{ overall }}%</div>
+</div>
+
+{% for cd in cat_data %}
+  <div class="card mb-2">
+    <div class="flex mb-2">
+      <div class="menu-icon soft-{{ cd.category.color }} text-{{ cd.category.color }}">
+        <i class="bi {% if cd.category.icon == 'work' %}bi-briefcase{% elif cd.category.icon == 'groups' %}bi-people{% else %}bi-graph-up-arrow{% endif %}"></i>
+      </div>
+      <div class="bold">{{ cd.category.title }}</div>
+    </div>
+    {% for i in cd.items %}
+      <div class="kpi-row">
+        <div class="kpi-label">{{ i.label }}</div>
+        <div class="kpi-trend {% if i.trend >= 0 %}up{% else %}down{% endif %}">
+          {% if i.trend > 0 %}<i class="bi bi-caret-up-fill"></i> +{{ i.trend|floatformat:0 }}{% elif i.trend < 0 %}<i class="bi bi-caret-down-fill"></i> {{ i.trend|floatformat:0 }}{% else %}—{% endif %}
+        </div>
+        <div class="kpi-value">{{ i.value|floatformat:0 }}{% if i.unit == '%' %}%{% else %} {{ i.unit }}{% endif %}</div>
+      </div>
+      <div class="progress mb-2"><span style="width:{{ i.percent }}%;background:var(--card-{{ cd.category.color }})"></span></div>
+    {% endfor %}
+  </div>
+{% empty %}
+  <div class="empty">
+    <div class="empty-icon"><i class="bi bi-graph-up-arrow"></i></div>
+    <p class="bold">KPI ma'lumotlari hali kiritilmagan</p>
+    <p class="small">Ko'rsatkichlar admin panel orqali kiritiladi</p>
+  </div>
+{% endfor %}
+{% endblock %}

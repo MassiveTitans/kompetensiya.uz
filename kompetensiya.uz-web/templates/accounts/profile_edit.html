@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Profilni tahrirlash — Kompetensiya.uz{% endblock %}
+
+{% block content %}
+<a href="{% url 'accounts:profile' %}" class="small muted"><i class="bi bi-arrow-left"></i> Profil</a>
+<div class="page-head mt-1">
+  <h1 class="page-title">Shaxsiy ma'lumotlar</h1>
+</div>
+
+<div class="card" style="max-width:560px">
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}<div class="form-errors">{{ field.errors.0 }}</div>{% endif %}
+    {% endfor %}
+    <button type="submit" class="btn btn-primary btn-block mt-2">Saqlash</button>
+  </form>
+</div>
+{% endblock %}

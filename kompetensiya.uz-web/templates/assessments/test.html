@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ assessment.title }} — Test{% endblock %}
+
+{% block content %}
+<a href="{% url 'assessments:list' %}" class="small muted"><i class="bi bi-arrow-left"></i> Baholash</a>
+
+<div class="hero-banner mt-1 mb-2" style="background:linear-gradient(135deg,var(--card-{{ assessment.color }}),var(--card-{{ assessment.color }}))">
+  <div>
+    <div class="bold" style="font-size:18px">{{ assessment.title }}</div>
+    <div class="small mt-1" style="opacity:.85"><i class="bi bi-clock"></i> {{ assessment.duration_minutes }} daqiqa • {{ questions|length }} savol • {{ assessment.level }}</div>
+  </div>
+</div>
+
+<form method="post" id="test-form">
+  {% csrf_token %}
+  {% for q in questions %}
+    <div class="question-card">
+      <div class="q-num">Savol {{ forloop.counter }} / {{ questions|length }}</div>
+      <div class="q-text">{{ q.text }}</div>
+      {% for c in q.choices.all %}
+        <label class="choice">
+          <input type="radio" name="q{{ q.id }}" value="{{ c.id }}" required>
+          <span>{{ c.text }}</span>
+        </label>
+      {% endfor %}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-secondary btn-block" style="padding:16px">Testni yakunlash</button>
+</form>
+{% endblock %}

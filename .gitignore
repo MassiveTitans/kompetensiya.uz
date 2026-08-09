@@ -1,0 +1,19 @@
+# Claude / editor tooling
+.claude/
+.vscode/
+.idea/
+
+# Python virtual environments
+venv/
+.venv/
+env/
+ENV/
+virtualenv/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

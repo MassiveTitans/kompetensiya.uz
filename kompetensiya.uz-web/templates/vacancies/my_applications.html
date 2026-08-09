@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Mening arizalarim — Kompetensiya.uz{% endblock %}
+
+{% block content %}
+<a href="{% url 'accounts:profile' %}" class="small muted"><i class="bi bi-arrow-left"></i> Profil</a>
+<div class="page-head mt-1">
+  <div>
+    <h1 class="page-title">Mening arizalarim</h1>
+    <p class="page-subtitle">{{ applications|length }} ta ariza yuborilgan</p>
+  </div>
+</div>
+
+{% for a in applications %}
+  <div class="menu-item">
+    <div class="menu-icon soft-{{ a.vacancy.card_color }} text-{{ a.vacancy.card_color }}"><i class="bi bi-briefcase"></i></div>
+    <div>
+      <div class="mi-label">{{ a.vacancy.position }}</div>
+      <div class="mi-sub">{{ a.vacancy.company }} • {{ a.created_at|naturaltime }}</div>
+    </div>
+    <span class="badge {% if a.status == 'accepted' %}badge-new{% elif a.status == 'rejected' %}badge-urgent{% else %}badge-warn{% endif %}" style="margin-left:auto">
+      {{ a.get_status_display }}
+    </span>
+  </div>
+{% empty %}
+  <div class="empty">
+    <div class="empty-icon"><i class="bi bi-file-earmark-text"></i></div>
+    <p class="bold">Hozircha arizalar yo'q</p>
+    <a href="{% url 'vacancies:list' %}" class="btn btn-primary btn-sm mt-2">Vakansiyalarni ko'rish</a>
+  </div>
+{% endfor %}
+{% endblock %}

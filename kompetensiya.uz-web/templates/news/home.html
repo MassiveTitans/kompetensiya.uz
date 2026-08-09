@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Yangiliklar va E'lonlar — Kompetensiya.uz{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Yangiliklar<br>va E'lonlar</h1>
+    {% if user.is_authenticated %}
+      <p class="page-subtitle">Xush kelibsiz, {{ user.first_name|default:user.username }}!</p>
+    {% else %}
+      <p class="page-subtitle">Istiqbolli Kadrlar platformasi</p>
+    {% endif %}
+  </div>
+  {% if user.is_authenticated %}
+    <a href="{% url 'accounts:profile' %}" class="avatar">{{ user.profile.initials }}</a>
+  {% endif %}
+</div>
+
+<!-- Tezkor havolalar (ilovadagi quick access) -->
+<div class="grid-2 mb-2">
+  <a href="{% url 'courses:list' %}" class="hero-banner" style="background:linear-gradient(135deg,var(--card-purple),#8E24AA)">
+    <div>
+      <i class="bi bi-mortarboard" style="font-size:22px"></i>
+      <div class="bold mt-1">Kurslar</div>
+      <div class="small" style="opacity:.8">Yangi ko'nikmalar o'rganing</div>
+    </div>
+    <i class="bi bi-arrow-right" style="font-size:22px"></i>
+  </a>
+  <a href="{% url 'vacancies:list' %}" class="hero-banner">
+    <div>
+      <i class="bi bi-briefcase" style="font-size:22px"></i>
+      <div class="bold mt-1">Vakansiyalar</div>
+      <div class="small" style="opacity:.8">Ish o'rinlarini toping</div>
+    </div>
+    <i class="bi bi-arrow-right" style="font-size:22px"></i>
+  </a>
+</div>
+
+<!-- Bannerlar -->
+{% for banner in banners %}
+  <a href="{{ banner.link|default:'#' }}" class="hero-banner mb-2 tint-{{ banner.color }}" style="background:none;background-color:var(--card-{{ banner.color }})">
+    <div>
+      <div class="bold" style="font-size:17px">{{ banner.title }}</div>
+      {% if banner.subtitle %}<div class="small mt-1" style="opacity:.85">{{ banner.subtitle }}</div>{% endif %}
+    </div>
+    <i class="bi bi-arrow-right" style="font-size:22px"></i>
+  </a>
+{% endfor %}
+
+<!-- Turkum filtrlari -->
+<div class="chips mt-2">
+  <a class="chip {% if not active_category %}active{% endif %}" href="{% url 'news:home' %}">Barchasi</a>
+  {% for c in categories %}
+    <a class="chip {% if active_category == c %}active{% endif %}" href="?turkum={{ c|urlencode }}">{{ c }}</a>
+  {% endfor %}
+</div>
+
+<div class="section-title">So'nggi yangiliklar</div>
+
+{% if news_list %}
+<div class="grid-2">
+  {% for item in news_list %}
+    <a href="{% url 'news:detail' item.pk %}" class="news-card tint-{{ item.card_color }}">
+      {% if item.image_url %}<div class="news-bg" style="background-image:url('{{ item.image_url }}')"></div>{% endif %}
+      <div class="news-body">
+        <div class="flex" style="gap:6px">
+          <span class="vc-tag">{{ item.category }}</span>
+          {% if item.is_urgent %}<span class="vc-tag" style="background:rgba(255,255,255,.35)"><i class="bi bi-lightning-charge-fill"></i> Muhim</span>{% endif %}
+        </div>
+        <div class="news-title">{{ item.title }}</div>
+        <div class="news-meta">{{ item.created_at|naturaltime }}</div>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+{% else %}
+  <div class="empty">
+    <div class="empty-icon"><i class="bi bi-newspaper"></i></div>
+    <p class="bold">Yangiliklar topilmadi</p>
+    <p class="small">Boshqa turkumni tanlab ko'ring</p>
+  </div>
+{% endif %}
+{% endblock %}

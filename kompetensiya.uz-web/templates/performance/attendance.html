@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Davomat — Kompetensiya.uz{% endblock %}
+
+{% block content %}
+<a href="{% url 'accounts:profile' %}" class="small muted"><i class="bi bi-arrow-left"></i> Profil</a>
+<div class="page-head mt-1">
+  <div>
+    <h1 class="page-title">Davomat</h1>
+    <p class="page-subtitle">GPS va QR kod orqali davomat</p>
+  </div>
+</div>
+
+<div class="grid-2 mb-2">
+  <!-- GPS davomat -->
+  <div class="card" style="background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff">
+    <i class="bi bi-geo-alt-fill" style="font-size:22px"></i>
+    <div class="bold mt-1" style="font-size:16px">GPS davomat</div>
+    {% if zone %}
+      <div class="small mt-1" style="opacity:.85">
+        <i class="bi bi-building"></i> {{ zone.name }} • radius {{ zone.radius_meters }} m
+      </div>
+    {% else %}
+      <div class="small mt-1" style="opacity:.85">Ish hududi belgilanmagan</div>
+    {% endif %}
+    {% if today_gps %}
+      <div class="small mt-1" style="opacity:.85">
+        Kelish: <b>{{ today_gps.check_in|time:'H:i' }}</b>
+        {% if today_gps.check_out %} • Ketish: <b>{{ today_gps.check_out|time:'H:i' }}</b>{% endif %}
+      </div>
+    {% else %}
+      <div class="small mt-1" style="opacity:.85">Bugun hali belgilanmagan</div>
+    {% endif %}
+    <form method="post" action="{% url 'performance:gps_check_in' %}" id="gps-form" class="mt-2">
+      {% csrf_token %}
+      <input type="hidden" name="latitude" id="gps-lat">
+      <input type="hidden" name="longitude" id="gps-lng">
+      <input type="hidden" name="location_name" value="{{ zone.name|default:'Ish joyi' }}">
+      <button type="submit" class="btn btn-block" style="background:#fff;color:#1B5E20">
+        {% if not today_gps %}Kelishni belgilash{% elif not today_gps.check_out %}Ketishni belgilash{% else %}<i class="bi bi-check2-circle"></i> Yakunlangan{% endif %}
+      </button>
+    </form>
+  </div>
+
+  <!-- QR davomat -->
+  <div class="card" style="background:linear-gradient(135deg,#0D47A1,#1565C0);color:#fff">
+    <i class="bi bi-qr-code-scan" style="font-size:22px"></i>
+    <div class="bold mt-1" style="font-size:16px">QR kod davomat</div>
+    <div class="small mt-1" style="opacity:.85">Tadbirdagi QR kodni kiriting</div>
+    <form method="post" action="{% url 'performance:qr_check_in' %}" class="mt-2">
+      {% csrf_token %}
+      <input type="text" name="qr_code" class="input mb-1" placeholder="QR kod qiymati" required style="background:rgba(255,255,255,.15);color:#fff">
+      <button type="submit" class="btn btn-block" style="background:#fff;color:#0D47A1">Belgilash</button>
+    </form>
+  </div>
+</div>
+
+{% if upcoming_events %}
+<div class="section-title">Yaqin tadbirlar</div>
+{% for e in upcoming_events %}
+  <div class="event-card">
+    <div class="event-date soft-{{ e.color }} text-{{ e.color }}">
+      <div><b>{{ e.date.day }}</b><br><small>{{ e.month_abbr }}</small></div>
+    </div>
+    <div style="flex:1"><div class="bold small">{{ e.title }}</div><div class="small muted"><i class="bi bi-geo-alt"></i> {{ e.location }}</div></div>
+  </div>
+{% endfor %}
+{% endif %}
+
+<div class="section-title">Ish davomati tarixi</div>
+{% if records %}
+<div class="card table-wrap">
+  <table class="data">
+    <thead><tr><th>Sana</th><th>Kelish</th><th>Ketish</th><th>Usul</th><th>Holat</th></tr></thead>
+    <tbody>
+      {% for r in records %}
+        <tr>
+          <td class="bold">{{ r.date|date:'j M Y' }}</td>
+          <td>{{ r.check_in|time:'H:i'|default:'—' }}</td>
+          <td>{{ r.check_out|time:'H:i'|default:'—' }}</td>
+          <td>{{ r.get_method_display }}</td>
+          <td>
+            <span class="badge {% if r.status == 'present' %}badge-new{% elif r.status == 'late' %}badge-warn{% else %}badge-urgent{% endif %}">
+              {{ r.get_status_display }}
+            </span>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <div class="empty"><div class="empty-icon"><i class="bi bi-geo-alt"></i></div><p class="bold">Davomat yozuvlari yo'q</p></div>
+{% endif %}
+
+<div class="section-title">Tadbir davomatlari</div>
+{% for ea in event_attendances %}
+  <div class="menu-item">
+    <div class="menu-icon soft-{{ ea.event.color }} text-{{ ea.event.color }}"><i class="bi bi-qr-code"></i></div>
+    <div><div class="mi-label">{{ ea.event.title }}</div><div class="mi-sub">{{ ea.checked_in_at|date:'j M Y, H:i' }}</div></div>
+    <span class="badge badge-new" style="margin-left:auto"><i class="bi bi-check2-circle"></i> Qatnashgan</span>
+  </div>
+{% empty %}
+  <p class="small muted">Hozircha tadbir davomatlari yo'q.</p>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // GPS koordinatalarini formaga qo'shish (brauzer ruxsat bersa)
+  var gpsForm = document.getElementById('gps-form');
+  if (gpsForm && navigator.geolocation) {
+    gpsForm.addEventListener('submit', function (e) {
+      var lat = document.getElementById('gps-lat');
+      if (lat.value) return; // allaqachon olingan
+      e.preventDefault();
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        lat.value = pos.coords.latitude;
+        document.getElementById('gps-lng').value = pos.coords.longitude;
+        gpsForm.submit();
+      }, function () { gpsForm.submit(); }, { timeout: 4000 });
+    });
+  }
+</script>
+{% endblock %}

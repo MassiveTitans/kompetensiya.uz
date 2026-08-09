@@ -1,0 +1,46 @@
+# /etc/systemd/system/kompetensiya.service
+#
+# O'rnatish:
+#   sudo cp deploy/kompetensiya.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now kompetensiya
+#   sudo systemctl status kompetensiya --no-pager
+
+[Unit]
+Description=Kompetensiya.uz — Istiqbolli Kadrlar (Django/gunicorn)
+After=network.target
+
+[Service]
+Type=notify
+User=aiysgdde
+Group=www-data
+WorkingDirectory=/var/www/kompetensiya.uz
+EnvironmentFile=/var/www/kompetensiya.uz/.env
+
+# Gunicorn 26 "control server" uchun $HOME/.gunicorn yaratadi.
+# ProtectHome=read-only tufayli /home yozib bo'lmaydi — HOME ni
+# loyiha papkasiga yo'naltiramiz (u ReadWritePaths ichida).
+Environment=HOME=/var/www/kompetensiya.uz
+
+ExecStart=/var/www/kompetensiya.uz/.venv/bin/gunicorn \
+    config.wsgi:application \
+    --bind 127.0.0.1:8001 \
+    --workers 3 \
+    --timeout 60 \
+    --access-logfile - \
+    --error-logfile -
+
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+RestartSec=3
+KillMode=mixed
+
+# Xavfsizlik cheklovlari
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/var/www/kompetensiya.uz
+
+[Install]
+WantedBy=multi-user.target

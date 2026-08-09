@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kirish — Kompetensiya.uz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="{% static 'favicon/favicon.ico' %}" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+  <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}">
+  <meta name="theme-color" content="#1565C0">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/bootstrap-icons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo"><img src="{% static 'img/logo-mark.png' %}" alt="Istiqbolli Kadrlar logotipi"></div>
+    <h1 class="center" style="font-size:26px;font-weight:800;color:var(--primary);letter-spacing:-0.5px">Istiqbolli Kadrlar</h1>
+    <p class="center muted mb-2" style="font-size:15px">Hamjamiyati</p>
+    <p class="center mb-3"><span class="badge badge-primary"><i class="bi bi-stars"></i> O'zbekiston yoshlari uchun</span></p>
+
+    <div class="card">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="form-errors mb-1" {% if message.tags == 'success' %}style="color:var(--success)"{% endif %}>{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <p class="center small muted mb-2">
+        Tizimga kirish yagona identifikatsiya tizimi — <b>ONE ID</b> orqali amalga oshiriladi.
+      </p>
+
+      <a href="{% url 'accounts:one_id' %}" class="btn btn-block"
+         style="background:var(--dark-1);color:#fff;padding:16px">
+        <i class="bi bi-person-badge"></i> ONE ID orqali kirish
+      </a>
+
+      <div class="card mt-2" style="background:var(--primary-container);box-shadow:none;padding:14px 16px">
+        <p class="small" style="color:var(--primary)">
+          ONE ID — O'zbekiston Respublikasining yagona identifikatsiya tizimi (id.egov.uz).
+          Shaxsiy ma'lumotlaringiz xavfsiz tarzda avtomatik olinadi.
+        </p>
+      </div>
+
+      {% if not one_id_configured %}
+        <p class="center small mt-2" style="color:var(--danger,#C62828)">
+          ONE ID hali sozlanmagan. Tizimga kirish uchun serverda
+          <b>ONE_ID_CLIENT_ID</b> va <b>ONE_ID_CLIENT_SECRET</b> qiymatlarini kiriting.
+        </p>
+      {% endif %}
+    </div>
+
+    <p class="center small muted mt-2">
+      <a href="{% url 'news:landing' %}" style="color:var(--primary);font-weight:600"><i class="bi bi-arrow-left"></i> Bosh sahifaga qaytish</a>
+    </p>
+  </div>
+</div>
+</body>
+</html>

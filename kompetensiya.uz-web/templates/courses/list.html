@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Kurslar — Kompetensiya.uz{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Kurslar</h1>
+    <p class="page-subtitle">Kasbiy rivojlanish uchun kurslar</p>
+  </div>
+</div>
+
+<div class="chips">
+  {% for c in categories %}
+    <a class="chip {% if selected_category == c %}active{% endif %}"
+       href="?turkum={{ c|urlencode }}&daraja={{ selected_level|urlencode }}">{{ c }}</a>
+  {% endfor %}
+</div>
+<div class="chips">
+  {% for l in levels %}
+    <a class="chip {% if selected_level == l %}active{% endif %}"
+       href="?turkum={{ selected_category|urlencode }}&daraja={{ l|urlencode }}">{{ l }}</a>
+  {% endfor %}
+</div>
+
+{% if courses %}
+<div class="grid-2 mt-2">
+  {% for c in courses %}
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="height:120px;background:var(--card-{{ c.card_color }});position:relative">
+        {% if c.image_url %}
+          <img src="{{ c.image_url }}" alt="{{ c.title }}" style="width:100%;height:100%;object-fit:cover;opacity:.55">
+        {% endif %}
+        <span class="badge badge-primary" style="position:absolute;top:12px;left:12px;background:#fff">{{ c.category }}</span>
+        <span class="badge" style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,.45);color:#fff">{{ c.level }}</span>
+      </div>
+      <div style="padding:16px 20px 20px">
+        <div class="bold" style="font-size:15px">{{ c.title }}</div>
+        <div class="small muted mt-1"><i class="bi bi-clock"></i> {{ c.duration_hours }} soat • <i class="bi bi-people"></i> {{ c.students_count|intcomma }} o'quvchi</div>
+        <div class="mt-2">
+          {% if user.is_authenticated %}
+            {% if c.id in enrollments %}
+              <span class="badge badge-new"><i class="bi bi-check2-circle"></i> Yozilgansiz</span>
+            {% else %}
+              <form method="post" action="{% url 'courses:enroll' c.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm">Kursga yozilish</button>
+              </form>
+            {% endif %}
+          {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-sm">Kursga yozilish</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+  <div class="empty">
+    <div class="empty-icon"><i class="bi bi-mortarboard"></i></div>
+    <p class="bold">Kurslar topilmadi</p>
+  </div>
+{% endif %}
+{% endblock %}

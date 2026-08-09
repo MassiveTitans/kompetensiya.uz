@@ -1,0 +1,26 @@
+{% for i in items %}
+  <div class="menu-item">
+    <div class="menu-icon soft-{{ i.a.color }} text-{{ i.a.color }}">
+      <i class="bi {% if i.a.icon == 'code' %}bi-code-slash{% elif i.a.icon == 'analytics' %}bi-bar-chart-line{% elif i.a.icon == 'language' %}bi-translate{% elif i.a.icon == 'design' %}bi-palette{% elif i.a.icon == 'management' %}bi-kanban{% elif i.a.icon == 'brain' %}bi-lightbulb{% elif i.a.icon == 'emotion' %}bi-emoji-smile{% elif i.a.icon == 'stress' %}bi-heart-pulse{% elif i.a.icon == 'leadership' %}bi-star{% else %}bi-bullseye{% endif %}"></i>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div class="mi-label">{{ i.a.title }}</div>
+      <div class="mi-sub"><i class="bi bi-clock"></i> {{ i.a.duration_minutes }} daqiqa • {{ i.a.question_count }} savol • {{ i.a.level }}</div>
+    </div>
+    {% if i.result %}
+      <div style="text-align:right">
+        <span class="badge badge-new"><i class="bi bi-check2-circle"></i> {{ i.result.score|floatformat:0 }}%</span>
+        <div class="mt-1"><a href="{% url 'assessments:take_test' i.a.pk %}" class="small" style="color:var(--primary);font-weight:600">Qayta topshirish</a></div>
+      </div>
+    {% elif user.is_authenticated %}
+      <a href="{% url 'assessments:take_test' i.a.pk %}" class="btn btn-primary btn-sm">Boshlash</a>
+    {% else %}
+      <a href="{% url 'accounts:login' %}" class="btn btn-ghost btn-sm">Kirish kerak</a>
+    {% endif %}
+  </div>
+{% empty %}
+  <div class="empty">
+    <div class="empty-icon"><i class="bi bi-clipboard-data"></i></div>
+    <p class="bold">Testlar mavjud emas</p>
+  </div>
+{% endfor %}

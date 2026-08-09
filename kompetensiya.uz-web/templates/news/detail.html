@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}{{ item.title }} — Kompetensiya.uz{% endblock %}
+
+{% block content %}
+<a href="{% url 'news:home' %}" class="small muted"><i class="bi bi-arrow-left"></i> Barcha yangiliklar</a>
+
+<div class="card mt-2">
+  <div class="flex mb-1" style="gap:8px">
+    <span class="badge badge-primary">{{ item.category }}</span>
+    {% if item.is_urgent %}<span class="badge badge-urgent"><i class="bi bi-lightning-charge-fill"></i> Muhim</span>{% endif %}
+    <span class="small muted">{{ item.created_at|naturaltime }}</span>
+  </div>
+  <h1 style="font-size:24px;font-weight:800;line-height:1.25">{{ item.title }}</h1>
+  {% if item.image_url %}
+    <img src="{{ item.image_url }}" alt="{{ item.title }}" class="post-img mt-2">
+  {% endif %}
+  <div class="mt-2" style="white-space:pre-line">{{ item.body|default:'Batafsil ma\'lumot tez orada.' }}</div>
+</div>
+
+{% if others %}
+<div class="section-title">Boshqa yangiliklar</div>
+<div class="grid-2">
+  {% for o in others %}
+    <a href="{% url 'news:detail' o.pk %}" class="news-card tint-{{ o.card_color }}">
+      {% if o.image_url %}<div class="news-bg" style="background-image:url('{{ o.image_url }}')"></div>{% endif %}
+      <div class="news-body">
+        <span class="vc-tag">{{ o.category }}</span>
+        <div class="news-title">{{ o.title }}</div>
+        <div class="news-meta">{{ o.created_at|naturaltime }}</div>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
